@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">PetFinderApp</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="fullname">Full name</string>
+    <string name="email">Email</string>
+    <string name="signup">SignUp</string>
+    <string name="loginhere">Already have an account? <u>Login</u></string>
+    <string name="signuphere"><u>Create new account</u></string>
+    <string name="welcome">Welcome!</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string-array name="sector_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+</resources>
