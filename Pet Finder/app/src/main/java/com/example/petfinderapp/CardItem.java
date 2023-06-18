@@ -5,20 +5,22 @@ public class CardItem {
     private String sector;
     private String description;
 
-    // Constructor
     public CardItem(String imageUrl, String sector, String description) {
         this.imageUrl = imageUrl;
         this.sector = sector;
         this.description = description;
     }
 
-    // Getter methods
     public String getImageUrl() {
         return imageUrl;
     }
 
     public String getSector() {
         return sector;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDescription() {

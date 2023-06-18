@@ -45,13 +45,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     List<CardItem> AllCardItems = new ArrayList<>();
 
+    RecyclerView recyclerView;
+    CardAdapter adapter;
+    List<CardItem> cardItems = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        String username = getIntent().getStringExtra("username");
-//        TextView usernameTextView = findViewById(R.id.usernameTextView);
-//        usernameTextView.setText(username);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -59,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
 
         String fullname = getIntent().getStringExtra("fullname");
         String email = getIntent().getStringExtra("email");
@@ -70,15 +69,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fullnameTextView.setText(fullname);
         emailTextView.setText(email);
 
-
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
-        //ADD POST BUTTON
+        //add post button
         Button myButton = findViewById(R.id.myButton);
         myButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,49 +85,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-
-
-
-
-//recyclerview+adapter
-        List<CardItem> cardItems = new ArrayList<>();
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        CardAdapter adapter = new CardAdapter(cardItems);
+        //RecyclerView setup
+        recyclerView = findViewById(R.id.recyclerView);
+        adapter = new CardAdapter(cardItems);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-//data from server
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://192.168.1.133/PetFinder/read.php";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONArray jsonArray = new JSONArray(response);
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                String imageUrl = jsonObject.getString("path");
-                                String sector = jsonObject.getString("sector");
-                                String description = jsonObject.getString("description");
-                                String picassopath="http://192.168.1.133/PetFinder/"+imageUrl;
-                                cardItems.add(new CardItem(picassopath, sector, description));
-                            }
-                            adapter.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, "Error occurred", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        queue.add(stringRequest);
-        AllCardItems=cardItems;
+        //Fetch posts from server when activity is created
+        fetchPosts();
 
         Button filterButton = findViewById(R.id.filterButton);
         final CharSequence[] sectors = new CharSequence[]{"All","1", "2", "3", "4", "5", "6"};
@@ -151,11 +112,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 builder.create().show();
             }
         });
-
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        fetchPosts();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchPosts();
+    }
 
+    private void fetchPosts() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://192.168.1.133/PetFinder/read.php";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            cardItems.clear(); // Clear existing items
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                String imageUrl = jsonObject.getString("path");
+                                String sector = jsonObject.getString("sector");
+                                String description = jsonObject.getString("description");
+                                String picassopath="http://192.168.1.133/PetFinder/"+imageUrl;
+                                cardItems.add(new CardItem(picassopath, sector, description));
+                            }
+                            adapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, "Error occurred", Toast.LENGTH_SHORT).show();
+            }
+        }
+        );
+        queue.add(stringRequest);
+        AllCardItems=cardItems;
+    }
+
+    //display only post with the sector parameter
     private void filterPosts(String sector) {
         List<CardItem> filteredCardItems = new ArrayList<>();
 
@@ -168,12 +174,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        CardAdapter adapter = new CardAdapter(filteredCardItems);
-        recyclerView.setAdapter(adapter);
+        CardAdapter filteredAdapter = new CardAdapter(filteredCardItems);
+        recyclerView.setAdapter(filteredAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item){
@@ -185,13 +189,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
                 break;
             }
+            case R.id.nav_myposts:
+                Intent intent = new Intent(MainActivity.this, MyPostsActivity.class);
+                intent.putExtra("email", getIntent().getStringExtra("email"));
+                startActivity(intent);
+                break;
             case R.id.nav_dark:
                 int grayColor = ContextCompat.getColor(getApplicationContext(), R.color.gray);
                 int whiteColor = ContextCompat.getColor(getApplicationContext(), R.color.white);
                 Drawable drawerBackground = drawer.getBackground();
                 if (drawerBackground instanceof ColorDrawable) {
                     int currentColor = ((ColorDrawable) drawerBackground).getColor();
-
                     if (currentColor == grayColor) {
                         drawer.setBackgroundColor(whiteColor);
                         Toast.makeText(getApplicationContext(),"Dark mode disabled", Toast.LENGTH_SHORT).show();
@@ -201,14 +209,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 break;
-            case R.id.nav_myposts:
-                Intent intent = new Intent(MainActivity.this, MyPostsActivity.class);
-                intent.putExtra("email", getIntent().getStringExtra("email"));
-                startActivity(intent);
-                break;
         }
         drawer.closeDrawer(GravityCompat.START);
-//        item.setChecked(false);
         return true;
     }
 

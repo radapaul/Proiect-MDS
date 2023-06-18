@@ -7,7 +7,7 @@ if($con) {
             $sector = $_POST['sector'];
             $description = $_POST['description'];
             $email = $_POST['email'];
-            $sql = "INSERT INTO images (path, sector, description, email) VALUES ('".$path."', '".$sector."', '".$description."', '".$email."')";
+            $sql = "INSERT INTO images (path, sector, description, email, post_date) VALUES ('".$path."', '".$sector."', '".$description."', '".$email."', NOW())";
             if(mysqli_query($con, $sql)){
                 echo 'success';
             }

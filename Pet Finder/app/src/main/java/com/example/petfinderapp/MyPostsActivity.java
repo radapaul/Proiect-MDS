@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyPostsActivity extends AppCompatActivity {
+    //used to get only own posts
     private String userEmail;
 
     @Override
@@ -31,17 +32,16 @@ public class MyPostsActivity extends AppCompatActivity {
 
         userEmail = getIntent().getStringExtra("email");
 
-
         List<CardItem> myCardItems = new ArrayList<>();
         RecyclerView myPostsRecyclerView = findViewById(R.id.myPostsRecyclerView);
         MyPostsAdapter myAdapter = new MyPostsAdapter(myCardItems);
         myPostsRecyclerView.setAdapter(myAdapter);
         myPostsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://192.168.1.133/PetFinder/read_my_posts.php?email=" + userEmail;
 
+        //GET request to fetch the user's posts
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -67,7 +67,7 @@ public class MyPostsActivity extends AppCompatActivity {
                 Toast.makeText(MyPostsActivity.this, "Error occurred", Toast.LENGTH_SHORT).show();
             }
         });
-
+        //adds the request to the queue to be executed
         queue.add(stringRequest);
     }
 }

@@ -16,6 +16,11 @@
 header('Content-Type: application/json'); // Specify that we are returning JSON
 $con = mysqli_connect("localhost", "root", "", "petfinder");
 if ($con) {
+    $stmt = $con->prepare("DELETE FROM images WHERE post_date < DATE_SUB(NOW(), INTERVAL 7 DAY)");
+    if (!$stmt->execute()) {
+        echo "Failed to delete old posts";
+        exit();
+    }
     $sql = "select * from images";
     $result = mysqli_query($con, $sql);
     $data = array(); // Initialize an array to store your data

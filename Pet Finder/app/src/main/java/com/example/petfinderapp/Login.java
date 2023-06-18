@@ -38,6 +38,7 @@ public class Login extends AppCompatActivity {
         textViewSignUp = findViewById(R.id.signUpText);
         progressBar = findViewById(R.id.progress);
 
+        //start SignUp activity
         textViewSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +75,7 @@ public class Login extends AppCompatActivity {
                                     try {
                                         JSONObject responseJson = new JSONObject(result);
                                         String message = responseJson.getString("message");
+                                        //start MainActivity
                                         if(message.equals("Login Success")){
                                             Toast.makeText(getApplicationContext(),message, Toast.LENGTH_SHORT).show();
                                             String fullname = responseJson.getString("fullname");

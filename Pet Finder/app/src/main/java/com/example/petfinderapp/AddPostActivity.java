@@ -35,15 +35,17 @@ import java.util.Map;
 
 public class AddPostActivity extends AppCompatActivity {
     Bitmap bitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
         ImageView imageView = findViewById(R.id.clickToUploadImg);
         Button button = findViewById(R.id.btnUpload);
+        //email from previous activity
         String email = getIntent().getStringExtra("email");
 
-        //open gallery
+        //get image from gallery
         ActivityResultLauncher<Intent> activityResultLauncher =
                 registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -61,6 +63,8 @@ public class AddPostActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        //open gallery
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +73,6 @@ public class AddPostActivity extends AppCompatActivity {
                 activityResultLauncher.launch(intent);
             }
         });
-
 
         //sector button
         Button chooseSectorButton = findViewById(R.id.chooseSectorButton);
@@ -143,8 +146,5 @@ public class AddPostActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-
-
     }
 }

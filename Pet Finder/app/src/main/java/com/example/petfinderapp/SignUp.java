@@ -21,6 +21,7 @@ public class SignUp extends AppCompatActivity {
     Button buttonSignUp;
     TextView textViewLogin;
     ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +35,7 @@ public class SignUp extends AppCompatActivity {
         textViewLogin = findViewById(R.id.loginText);
         progressBar = findViewById(R.id.progress);
 
+        //start Login activity
         textViewLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
