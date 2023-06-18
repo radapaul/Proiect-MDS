@@ -3,7 +3,7 @@
 
 ## Epic story
 
-     Aplicatia va fi numita Pet Finder , in care fiecare utilizator va putea posta si vedea anunturi cu animale pierdute .
+Aplicatia va fi numita Pet Finder , in care fiecare utilizator va putea posta si vedea anunturi cu animale pierdute .
 
 
 ## Must Have
@@ -38,7 +38,7 @@
 
 ## Tehnologii folosite 
 
-    Android Studio, Java si PHP
+Android Studio, Java si PHP
 
 
 ## Link catre Backlog
